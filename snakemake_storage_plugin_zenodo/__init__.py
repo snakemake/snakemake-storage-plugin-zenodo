@@ -139,7 +139,8 @@ class StorageProvider(StorageProviderBase):
             return StorageQueryValidationResult(
                 query=query,
                 valid=False,
-                reason="Invalid record ID. Expected a number, to occur directly after record/ or deposition/.",
+                reason="Invalid record ID. Expected a number, to occur directly after "
+                "record/ or deposition/.",
             )
         return StorageQueryValidationResult(valid=True, query=query)
 
@@ -161,8 +162,12 @@ class StorageObject(StorageObjectRead, StorageObjectWrite):
         self.parsed = urlparse(self.query)
         self.is_record = self.parsed.netloc == "record"
         self.bucket_id = self.parsed.path.lstrip("/").split("/")[0]
-        self.path = str(Path(self.parsed.path.lstrip("/")).relative_to(self.bucket_id).as_posix())
-        self.helper = ZENHelper(self.provider.settings, is_record=self.is_record, deposition=self.bucket_id)
+        self.path = str(
+            Path(self.parsed.path.lstrip("/")).relative_to(self.bucket_id).as_posix()
+        )
+        self.helper = ZENHelper(
+            self.provider.settings, is_record=self.is_record, deposition=self.bucket_id
+        )
 
     async def inventory(self, cache: IOCacheStorageInterface):
         """From this file, try to find as much existence and modification date
