@@ -1,5 +1,7 @@
 from dataclasses import dataclass, field
 import hashlib
+from pathlib import Path
+import re
 from typing import Any, Optional
 from urllib.parse import urlparse
 from requests import HTTPError
@@ -18,6 +20,9 @@ from snakemake_interface_storage_plugins.storage_object import (
 from snakemake_interface_storage_plugins.io import IOCacheStorageInterface, Mtime
 
 from snakemake_storage_plugin_zenodo.helper import ZENHelper
+
+
+number_re = re.compile(r"/\d+/")
 
 
 # Optional:
@@ -82,7 +87,7 @@ class StorageProvider(StorageProviderBase):
     def example_query(cls) -> ExampleQuery:
         """Return an example query with description for this storage provider."""
         return ExampleQuery(
-            query="zenodo://123456/path/to/file_or_dir",
+            query="zenodo://record/123456/path/to/file_or_dir",
             description="A valid Zenodo record ID, followed by the path to a file or "
             "directory in the record.",
         )
@@ -118,17 +123,23 @@ class StorageProvider(StorageProviderBase):
                 valid=False,
                 reason="Invalid scheme. Expected 'zenodo'.",
             )
-        if not parsed.netloc:
+        if parsed.netloc not in ("record", "deposition"):
             return StorageQueryValidationResult(
                 query=query,
                 valid=False,
-                reason="No record ID given.",
+                reason="Invalid item type. Expected 'record' or 'deposition'.",
             )
         if not parsed.path:
             return StorageQueryValidationResult(
                 query=query,
                 valid=False,
                 reason="No file path given.",
+            )
+        if not number_re.match(parsed.path):
+            return StorageQueryValidationResult(
+                query=query,
+                valid=False,
+                reason="Invalid record ID. Expected a number, to occur directly after record/ or deposition/.",
             )
         return StorageQueryValidationResult(valid=True, query=query)
 
@@ -148,8 +159,10 @@ class StorageObject(StorageObjectRead, StorageObjectWrite):
         # Alternatively, you can e.g. prepare a connection to your storage backend here.
         # and set additional attributes.
         self.parsed = urlparse(self.query)
-        self.path = self.parsed.path.lstrip("/")
-        self.helper = ZENHelper(self.provider.settings, deposition=self.parsed.netloc)
+        self.is_record = self.parsed.netloc == "record"
+        self.bucket_id = self.parsed.path.lstrip("/").split("/")[0]
+        self.path = str(Path(self.parsed.path.lstrip("/")).relative_to(self.bucket_id).as_posix())
+        self.helper = ZENHelper(self.provider.settings, is_record=self.is_record, deposition=self.bucket_id)
 
     async def inventory(self, cache: IOCacheStorageInterface):
         """From this file, try to find as much existence and modification date
@@ -173,6 +186,7 @@ class StorageObject(StorageObjectRead, StorageObjectWrite):
             if e.response.status_code == 404:
                 # record does not exist
                 cache.exists_in_storage[self.get_inventory_parent()] = False
+                return
             else:
                 raise e
         cache.exists_in_storage[self.get_inventory_parent()] = True
@@ -183,12 +197,12 @@ class StorageObject(StorageObjectRead, StorageObjectWrite):
             cache.exists_in_storage[key] = True
 
     def _local_suffix_from_file(self, f):
-        return f"{self.parsed.netloc}/{f}"
+        return f"{self.parsed.netloc}/{self.bucket_id}/{f}"
 
     def get_inventory_parent(self) -> Optional[str]:
         """Return the parent directory of this object."""
         # this is optional and can be left as is
-        return self.cache_key(self.parsed.netloc)
+        return self.cache_key(f"{self.parsed.netloc}/{self.bucket_id}")
 
     def local_suffix(self) -> str:
         """Return a unique suffix for the local path, determined from self.query."""

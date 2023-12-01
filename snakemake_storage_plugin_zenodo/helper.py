@@ -13,7 +13,7 @@ ZenFileInfo = namedtuple(
 
 
 class ZENHelper:
-    def __init__(self, settings, deposition=None):
+    def __init__(self, settings, deposition=None, is_record=True):
         try:
             self._access_token = settings.access_token
         except KeyError:
@@ -34,14 +34,9 @@ class ZENHelper:
         else:
             self._baseurl = "https://zenodo.org"
 
-        self.is_new_deposition = deposition is None
-        if self.is_new_deposition:
-            # Creating a new deposition, as deposition id was not supplied.
-            self.create_deposition()
-        else:
-            self.deposition = deposition
-            self._bucket = None
-            self.is_new_deposition = False
+        self.is_new_deposition = not is_record
+        self.deposition = deposition
+        self._bucket = None
 
     def _api_request(
         self,
@@ -70,17 +65,6 @@ class ZENHelper:
             return msg
         else:
             return r
-
-    def create_deposition(self):
-        resp = self._api_request(
-            method="POST",
-            url=self._baseurl + "/api/deposit/depositions",
-            headers={"Content-Type": JSON_MIME},
-            data="{}",
-            json=True,
-        )
-        self.deposition = resp["id"]
-        self._bucket = resp["links"]["bucket"]
 
     @property
     def bucket(self):
