@@ -1,6 +1,6 @@
 from dataclasses import dataclass, field
 import hashlib
-from typing import Any, Iterable, Optional
+from typing import Any, Optional
 from urllib.parse import urlparse
 from snakemake_interface_storage_plugins.settings import StorageProviderSettingsBase
 from snakemake_interface_storage_plugins.storage_provider import (
@@ -12,7 +12,6 @@ from snakemake_interface_storage_plugins.storage_provider import (
 from snakemake_interface_storage_plugins.storage_object import (
     StorageObjectRead,
     StorageObjectWrite,
-    StorageObjectGlob,
     retry_decorator,
 )
 from snakemake_interface_storage_plugins.io import IOCacheStorageInterface, Mtime
@@ -35,7 +34,9 @@ class StorageProviderSettings(StorageProviderSettingsBase):
     accesss_token: Optional[str] = field(
         default=None,
         metadata={
-            "help": "Zenodo personal access token. Separate registration and access token is needed for Zenodo sandbox environment at https://sandbox.zenodo.org.",
+            "help": "Zenodo personal access token. Separate registration and access "
+            "token is needed for Zenodo sandbox environment at "
+            "https://sandbox.zenodo.org.",
             "env_var": True,
             # Optionally specify that setting is required when the executor is in use.
             "required": True,
@@ -44,7 +45,8 @@ class StorageProviderSettings(StorageProviderSettingsBase):
     restricted_access_token: Optional[str] = field(
         default=None,
         metadata={
-            "help": "Zenodo restricted access token. This is needed for access to restricted records.",
+            "help": "Zenodo restricted access token. This is needed for access to "
+            "restricted records.",
             "env_var": True,
             # Optionally specify that setting is required when the executor is in use.
             "required": True,
@@ -53,7 +55,8 @@ class StorageProviderSettings(StorageProviderSettingsBase):
     sandbox: bool = field(
         default=False,
         metadata={
-            "help": "Whether to use sandbox.zenodo.org instead of the production instance.",
+            "help": "Whether to use sandbox.zenodo.org instead of the production "
+            "instance.",
             "env_var": False,
             # Optionally specify that setting is required when the executor is in use.
             "required": False,
@@ -67,9 +70,12 @@ class StorageProviderSettings(StorageProviderSettingsBase):
 # You can however use it to store global information or maintain e.g. a connection
 # pool.
 class StorageProvider(StorageProviderBase):
-
     def __post_init__(self):
-        self.endpoint = "https://sandbox.zenodo.org" if self.settings.sandbox else "https://zenodo.org"
+        self.endpoint = (
+            "https://sandbox.zenodo.org"
+            if self.settings.sandbox
+            else "https://zenodo.org"
+        )
 
     @classmethod
     def example_query(cls) -> ExampleQuery:

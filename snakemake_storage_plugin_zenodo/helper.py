@@ -11,13 +11,15 @@ ZenFileInfo = namedtuple(
     "ZenFileInfo", ["filename", "checksum", "filesize", "download"]
 )
 
+
 class ZENHelper:
     def __init__(self, settings, deposition=None):
         try:
             self._access_token = settings.access_token
         except KeyError:
             raise WorkflowError(
-                "Zenodo personal access token must be passed in as 'access_token' argument.\n"
+                "Zenodo personal access token must be passed in as 'access_token' "
+                "argument.\n"
                 "Separate registration and access token is needed for Zenodo sandbox "
                 "environment at https://sandbox.zenodo.org."
             )
@@ -120,8 +122,10 @@ class ZENHelper:
         )
         if "files" not in resp:
             raise WorkflowError(
-                f"No files found in zenodo deposition https://zenodo.org/record/{self.deposition}. "
-                "Either the depositon is empty or access is restricted. Please check in your browser."
+                "No files found in zenodo deposition "
+                f"https://zenodo.org/record/{self.deposition}. "
+                "Either the depositon is empty or access is restricted. Please check "
+                "in your browser."
             )
         files = resp["files"]
 
@@ -158,7 +162,9 @@ class ZENHelper:
                 self._restricted_access_cookies = resp.cookies
             else:
                 raise WorkflowError(
-                    "Failure to retrieve session cookie with given restricted access token. "
-                    f"Is the token valid? Please check by opening {url} manually in your browser."
+                    "Failure to retrieve session cookie with given restricted "
+                    "access token. "
+                    f"Is the token valid? Please check by opening {url} manually in "
+                    "your browser."
                 )
         return self._restricted_access_cookies

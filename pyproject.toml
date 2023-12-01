@@ -1,7 +1,7 @@
 [tool.poetry]
 name = "snakemake-storage-plugin-zenodo"
 version = "0.1.0"
-description = ""
+description = "A Snakemake storage plugin for reading from and writing to zenodo.org"
 authors = ["Johannes Koester <johannes.koester@uni-due.de>"]
 readme = "README.md"
 
@@ -9,6 +9,7 @@ readme = "README.md"
 python = "^3.11"
 snakemake-interface-common = "^1.14.4"
 snakemake-interface-storage-plugins = "^2.1.1"
+requests = "^2.31.0"
 
 
 [tool.poetry.group.dev.dependencies]
