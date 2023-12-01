@@ -25,6 +25,7 @@ class ZENHelper:
             )
 
         self.restricted_access_token = settings.restricted_access_token
+        self._restricted_access_cookies = None
 
         self._sandbox = settings.sandbox
 
@@ -61,17 +62,14 @@ class ZENHelper:
         cookies = self.restricted_access_cookies if restricted_access else None
 
         # Run query.
-        try:
-            r = session.request(
-                method=method, url=url, data=data, files=files, cookies=cookies
-            )
-            if json:
-                msg = r.json()
-                return msg
-            else:
-                return r
-        except requests.HTTPError as e:
-            raise WorkflowError("Failed to connect to zenodo", e)
+        r = session.request(
+            method=method, url=url, data=data, files=files, cookies=cookies
+        )
+        if json:
+            msg = r.json()
+            return msg
+        else:
+            return r
 
     def create_deposition(self):
         resp = self._api_request(

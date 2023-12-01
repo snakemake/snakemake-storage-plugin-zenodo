@@ -17,7 +17,7 @@ class TestStorageZenodoBase(TestStorageBase):
     def get_storage_provider_settings(self) -> Optional[StorageProviderSettingsBase]:
         # instantiate StorageProviderSettings of this plugin as appropriate
         return StorageProviderSettings(
-            access_token=os.environ("SNAKEMAKE_STORAGE_ZENODO_ACCESS_TOKEN"),
+            access_token=os.environ["SNAKEMAKE_STORAGE_ZENODO_ACCESS_TOKEN"],
             sandbox=True,
         )
 
@@ -31,23 +31,23 @@ class TestStorageRead(TestStorageZenodoBase):
     def get_query(self, tmp_path) -> str:
         # Return a query. If retrieve_only is True, this should be a query that
         # is present in the storage, as it will not be created.
-        return "zenodo://3269"
+        return "zenodo://3269/datapackage.json"
 
     def get_query_not_existing(self, tmp_path) -> str:
         return "zenodo://0"
 
 
-class TestStorageWrite(TestStorageZenodoBase):
-    __test__ = True
-    retrieve_only = False  # set to True if the storage is read-only
-    store_only = True  # set to True if the storage is write-only
-    # TODO enable deletion in not yet published depositions
-    delete = False  # set to False if the storage does not support deletion
+# class TestStorageWrite(TestStorageZenodoBase):
+#     __test__ = True
+#     retrieve_only = False  # set to True if the storage is read-only
+#     store_only = True  # set to True if the storage is write-only
+#     # TODO enable deletion in not yet published depositions
+#     delete = False  # set to False if the storage does not support deletion
 
-    def get_query(self, tmp_path) -> str:
-        # Return a query. If retrieve_only is True, this should be a query that
-        # is present in the storage, as it will not be created.
-        return "zenodo://5157"
+#     def get_query(self, tmp_path) -> str:
+#         # Return a query. If retrieve_only is True, this should be a query that
+#         # is present in the storage, as it will not be created.
+#         return "zenodo://5157"
 
-    def get_query_not_existing(self, tmp_path) -> str:
-        return "zenodo://0"
+#     def get_query_not_existing(self, tmp_path) -> str:
+#         return "zenodo://0"

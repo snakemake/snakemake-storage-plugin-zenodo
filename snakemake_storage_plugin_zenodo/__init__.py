@@ -2,6 +2,7 @@ from dataclasses import dataclass, field
 import hashlib
 from typing import Any, Optional
 from urllib.parse import urlparse
+from requests import HTTPError
 from snakemake_interface_storage_plugins.settings import StorageProviderSettingsBase
 from snakemake_interface_storage_plugins.storage_provider import (
     StorageProviderBase,
@@ -31,7 +32,7 @@ from snakemake_storage_plugin_zenodo.helper import ZENHelper
 # settings.
 @dataclass
 class StorageProviderSettings(StorageProviderSettingsBase):
-    accesss_token: Optional[str] = field(
+    access_token: Optional[str] = field(
         default=None,
         metadata={
             "help": "Zenodo personal access token. Separate registration and access "
@@ -123,6 +124,12 @@ class StorageProvider(StorageProviderBase):
                 valid=False,
                 reason="No record ID given.",
             )
+        if not parsed.path:
+            return StorageQueryValidationResult(
+                query=query,
+                valid=False,
+                reason="No file path given.",
+            )
         return StorageQueryValidationResult(valid=True, query=query)
 
 
@@ -141,6 +148,7 @@ class StorageObject(StorageObjectRead, StorageObjectWrite):
         # Alternatively, you can e.g. prepare a connection to your storage backend here.
         # and set additional attributes.
         self.parsed = urlparse(self.query)
+        self.path = self.parsed.path.lstrip("/")
         self.helper = ZENHelper(self.provider.settings, deposition=self.parsed.netloc)
 
     async def inventory(self, cache: IOCacheStorageInterface):
@@ -159,12 +167,19 @@ class StorageObject(StorageObjectRead, StorageObjectWrite):
             # record has been inventorized before
             return
 
-        files = self.helper.get_files_record()
+        try:
+            files = self.helper.get_files_record()
+        except HTTPError as e:
+            if e.response.status_code == 404:
+                # record does not exist
+                cache.exists_in_storage[self.get_inventory_parent()] = False
+            else:
+                raise e
         cache.exists_in_storage[self.get_inventory_parent()] = True
-        for f, meta in files:
+        for f, meta in files.items():
             key = self.cache_key(self._local_suffix_from_file(f))
             cache.mtime[key] = Mtime(storage=0)
-            cache.size[key] = meta.size
+            cache.size[key] = meta.filesize
             cache.exists_in_storage[key] = True
 
     def _local_suffix_from_file(self, f):
@@ -191,7 +206,13 @@ class StorageObject(StorageObjectRead, StorageObjectWrite):
     @retry_decorator
     def exists(self) -> bool:
         # return True if the object exists
-        return self.parsed.path in self.helper.get_files_record()
+        try:
+            return self.path in self.helper.get_files()
+        except HTTPError as e:
+            if e.response.status_code == 404:
+                return False
+            else:
+                raise e
 
     @retry_decorator
     def mtime(self) -> float:
@@ -202,7 +223,7 @@ class StorageObject(StorageObjectRead, StorageObjectWrite):
     @retry_decorator
     def size(self) -> int:
         # return the size in bytes
-        return self.helper.get_files_record()[self.parsed.path].size
+        return self._stats().filesize
 
     @retry_decorator
     def retrieve_object(self):
@@ -234,7 +255,7 @@ class StorageObject(StorageObjectRead, StorageObjectWrite):
         # self.local_path().
         with open(self.local_path(), "rb") as lf:
             self.helper._api_request(
-                self.helper.bucket + f"/{self.parsed.path}",
+                self.helper.bucket + f"/{self.path}",
                 method="PUT",
                 data=lf,
             )
@@ -249,4 +270,4 @@ class StorageObject(StorageObjectRead, StorageObjectWrite):
     # helper
 
     def _stats(self):
-        return self._zen.get_files()[self.parsed.path]
+        return self.helper.get_files()[self.path]
