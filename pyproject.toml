@@ -1,0 +1,23 @@
+[tool.poetry]
+name = "snakemake-storage-plugin-zenodo"
+version = "0.1.0"
+description = ""
+authors = ["Johannes Koester <johannes.koester@uni-due.de>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.11"
+snakemake-interface-common = "^1.14.4"
+snakemake-interface-storage-plugins = "^2.1.1"
+
+
+[tool.poetry.group.dev.dependencies]
+black = "^23.11.0"
+flake8 = "^6.1.0"
+coverage = "^7.3.2"
+pytest = "^7.4.3"
+snakemake = "^7.32.4"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
