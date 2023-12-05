@@ -2,7 +2,7 @@ from dataclasses import dataclass, field
 import hashlib
 from pathlib import Path
 import re
-from typing import Any, Optional
+from typing import Any, List, Optional
 from urllib.parse import urlparse
 from requests import HTTPError
 from snakemake_interface_storage_plugins.settings import StorageProviderSettingsBase
@@ -11,6 +11,7 @@ from snakemake_interface_storage_plugins.storage_provider import (
     StorageQueryValidationResult,
     ExampleQuery,
     Operation,
+    QueryType,
 )
 from snakemake_interface_storage_plugins.storage_object import (
     StorageObjectRead,
@@ -84,13 +85,23 @@ class StorageProvider(StorageProviderBase):
         )
 
     @classmethod
-    def example_query(cls) -> ExampleQuery:
+    def example_queries(cls) -> List[ExampleQuery]:
         """Return an example query with description for this storage provider."""
-        return ExampleQuery(
-            query="zenodo://record/123456/path/to/file_or_dir",
-            description="A valid Zenodo record ID, followed by the path to a file or "
-            "directory in the record.",
-        )
+        return [
+            ExampleQuery(
+                query="zenodo://record/123456/path/to/file_or_dir",
+                type=QueryType.INPUT,
+                description="A published zenodo record, starting with the ID, followed "
+                "by the path to a file or directory in the record.",
+            ),
+            ExampleQuery(
+                query="zenodo://deposition/123456/path/to/file_or_dir",
+                type=QueryType.ANY,
+                description="A unpublished (still writable) zenodo record, starting "
+                "with the ID, followed by the path to a file or directory in the "
+                "record.",
+            ),
+        ]
 
     def rate_limiter_key(self, query: str, operation: Operation) -> Any:
         """Return a key for identifying a rate limiter given a query and an operation.
