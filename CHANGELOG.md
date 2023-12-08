@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.1.2](https://github.com/snakemake/snakemake-storage-plugin-zenodo/compare/v0.1.1...v0.1.2) (2023-12-08)
+
+
+### Documentation
+
+* update metadata ([4eb6913](https://github.com/snakemake/snakemake-storage-plugin-zenodo/commit/4eb69139cace4070869633534b63cd333bdf5ebe))
+
 ## [0.1.1](https://github.com/snakemake/snakemake-storage-plugin-zenodo/compare/v0.1.0...v0.1.1) (2023-12-05)
 
 
