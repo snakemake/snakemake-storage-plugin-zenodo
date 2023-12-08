@@ -4,6 +4,10 @@ version = "0.1.0"
 description = "A Snakemake storage plugin for reading from and writing to zenodo.org"
 authors = ["Johannes Koester <johannes.koester@uni-due.de>"]
 readme = "README.md"
+license = "MIT"
+repository = "https://github.com/snakemake/snakemake-storage-plugin-zenodo"
+documentation = "https://snakemake.github.io/snakemake-plugin-catalog/plugins/storage/zenodo.html"
+keywords = ["snakemake", "zenodo", "storage", "plugin"]
 
 [tool.poetry.dependencies]
 python = "^3.11"
