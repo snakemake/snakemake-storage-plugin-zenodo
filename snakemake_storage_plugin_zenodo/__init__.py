@@ -56,7 +56,7 @@ class StorageProviderSettings(StorageProviderSettingsBase):
             "restricted records.",
             "env_var": True,
             # Optionally specify that setting is required when the executor is in use.
-            "required": True,
+            "required": False,
         },
     )
     sandbox: bool = field(
