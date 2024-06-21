@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.1.3](https://github.com/snakemake/snakemake-storage-plugin-zenodo/compare/v0.1.2...v0.1.3) (2024-06-21)
+
+
+### Bug Fixes
+
+* restricted access token should not be required ([ee074fb](https://github.com/snakemake/snakemake-storage-plugin-zenodo/commit/ee074fb3c82bfaae51442ef3013603cb238f7969))
+
 ## [0.1.2](https://github.com/snakemake/snakemake-storage-plugin-zenodo/compare/v0.1.1...v0.1.2) (2023-12-08)
 
 
