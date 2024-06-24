@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.1.4](https://github.com/snakemake/snakemake-storage-plugin-zenodo/compare/v0.1.3...v0.1.4) (2024-06-24)
+
+
+### Bug Fixes
+
+* comply to rate limiting ([e242281](https://github.com/snakemake/snakemake-storage-plugin-zenodo/commit/e242281b889e17c85b859d86418a89e6e06575c0))
+
 ## [0.1.3](https://github.com/snakemake/snakemake-storage-plugin-zenodo/compare/v0.1.2...v0.1.3) (2024-06-21)
 
 
