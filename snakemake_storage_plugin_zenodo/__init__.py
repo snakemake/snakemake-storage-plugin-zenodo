@@ -115,7 +115,7 @@ class StorageProvider(StorageProviderBase):
     def default_max_requests_per_second(self) -> float:
         """Return the default maximum number of requests per second for this storage
         provider."""
-        return 1 # see https://developers.zenodo.org/#rate-limiting
+        return 1  # see https://developers.zenodo.org/#rate-limiting
 
     def use_rate_limiter(self) -> bool:
         """Return False if no rate limiting is needed for this provider."""
