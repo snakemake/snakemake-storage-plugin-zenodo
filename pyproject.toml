@@ -12,7 +12,7 @@ keywords = ["snakemake", "zenodo", "storage", "plugin"]
 [tool.poetry.dependencies]
 python = "^3.11"
 snakemake-interface-common = "^1.14.4"
-snakemake-interface-storage-plugins = "^3.0.0"
+snakemake-interface-storage-plugins = "^4.1.0"
 requests = "^2.31.0"
 
 
@@ -21,7 +21,7 @@ black = "^23.11.0"
 flake8 = "^6.1.0"
 coverage = "^7.3.2"
 pytest = "^7.4.3"
-snakemake = {git="https://github.com/snakemake/snakemake.git"}
+snakemake = "^9.1.0"
 
 [build-system]
 requires = ["poetry-core"]
