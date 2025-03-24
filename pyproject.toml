@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "snakemake-storage-plugin-zenodo"
-version = "0.1.4"
+version = "0.1.5"
 description = "A Snakemake storage plugin for reading from and writing to zenodo.org"
 authors = ["Johannes Koester <johannes.koester@uni-due.de>"]
 readme = "README.md"

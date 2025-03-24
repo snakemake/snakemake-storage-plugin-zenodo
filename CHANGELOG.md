@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.1.5](https://github.com/snakemake/snakemake-storage-plugin-zenodo/compare/v0.1.4...v0.1.5) (2025-03-24)
+
+
+### Bug Fixes
+
+* adapt to storage plugin interface changes ([#6](https://github.com/snakemake/snakemake-storage-plugin-zenodo/issues/6)) ([af227ff](https://github.com/snakemake/snakemake-storage-plugin-zenodo/commit/af227ff90bc0d3ed083be08b09a2bb9927683e01))
+
 ## [0.1.4](https://github.com/snakemake/snakemake-storage-plugin-zenodo/compare/v0.1.3...v0.1.4) (2024-06-24)
 
 
